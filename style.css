@@ -103,3 +103,33 @@ html, body {
   border-color: orangered;
   transform: translateY(-2px);
 }
+.nav-button {
+  display: block;
+  width: 100%;
+  padding: 1rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+  letter-spacing: 1px;
+  color: #ffffff;
+  background-color: #243044;
+  border: 2px solid #3b4d6b;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.nav-button:hover,
+.nav-button:active {
+  background-color: orangered;
+  border-color: orangered;
+  transform: translateY(-2px);
+}
+
+.admin-btn {
+  background-color: #1a222d;
+  border-color: #2a374a;
+  color: #94a3b8;
+  font-size: 0.9rem;
+}
