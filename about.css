@@ -1,0 +1,16 @@
+html, body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden; /* Stops horizontal scrolling dead in its tracks */
+  margin: 0;
+  padding: 0;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+img, video {
+  max-width: 100%; /* Never allows media to bleed outside screen width */
+  height: auto;
+}

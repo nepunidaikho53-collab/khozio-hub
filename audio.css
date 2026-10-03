@@ -1,0 +1,73 @@
+html, body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden; /* Stops horizontal scrolling dead in its tracks */
+  margin: 0;
+  padding: 0;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+img, video {
+  max-width: 100%; /* Never allows media to bleed outside screen width */
+  height: auto;
+}
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: #121820;
+  color: #fff;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
+
+.audio-container {
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.page-title {
+  text-align: center;
+  font-size: clamp(1.8rem, 5vw, 2.5rem);
+  margin-bottom: 1rem;
+}
+
+.audio-card {
+  background-color: #ffffff;
+  color: #111;
+  border-radius: 14px;
+  padding: 1.25rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.audio-info {
+  margin-bottom: 0.85rem;
+}
+
+.audio-info h3 {
+  font-size: 1.2rem;
+  color: #1a1a1a;
+  margin-bottom: 0.25rem;
+}
+
+.audio-info p {
+  font-size: 0.95rem;
+  color: #666;
+}
+
+.audio-card audio {
+  width: 100%;
+  border-radius: 6px;
+}

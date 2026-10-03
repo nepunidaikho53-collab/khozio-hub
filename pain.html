@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/cool.css">
+        <style>
+        body { font-family: sans-serif; text-align: center; background: #1e1e1e; color: #fff; padding: 20px; }
+        .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-top: 20px; }
+        .gallery img { width: 100%; height: 150px; object-fit: cover; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+    </style>
+</head>
+<body>
+     <h1>KID KHOZIO</h1>
+    
+    
+    <div class="gallery" id="imageContainer"></div>
+
+ <script>
+        // List your image filenames here as you add them
+        const images = [""]; 
+
+        const container = document.getElementById("imageContainer");
+        
+        images.forEach(img => {
+            const imageElement = document.createElement("img");
+            imageElement.src = img;
+            imageElement.alt = img;
+            
+            // This will put a red border around any image that fails to load
+            imageElement.onerror = function() {
+                this.style.border = "3px solid red";
+                console.error("Could not find image file: " + this.src);
+            };
+
+            container.appendChild(imageElement);
+        });
+    </script>
+    <!-- Load Supabase Library -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+  const SUPABASE_URL = "https://fdufetvyfwtlhbdlbbly.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_b97lR3uD1m4bDQO2Q9JTsQ_eMcrfYH7";
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  // CHANGE THIS for each file: 'kid', 'cool', 'shirtless', 'happy', 'pain', or 'playing'
+  const CURRENT_PAGE_CATEGORY = "kid"; 
+
+  async function loadCloudMedia() {
+    const { data, error } = await supabase
+      .from('uploads')
+      .select('*')
+      .eq('category', CURRENT_PAGE_CATEGORY)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error("Error fetching media:", error);
+      return;
+    }
+
+    data.forEach(item => {
+      if (item.media_type === "image") {
+        images.unshift(item.file_url);
+
+        const img = document.createElement("img");
+        img.src = item.file_url;
+        img.onclick = () => openModal(images, 0, 'image');
+        imageContainer.prepend(img);
+      } else if (item.media_type === "video") {
+        videos.unshift(item.file_url);
+
+        const vid = document.createElement("video");
+        vid.src = item.file_url;
+        vid.muted = true;
+        vid.onclick = () => openModal(videos, 0, 'video');
+        videoContainer.prepend(vid);
+      }
+    });
+  }
+
+  loadCloudMedia();
+</script>
+</body>
+</html>

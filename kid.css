@@ -1,0 +1,66 @@
+html, body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden; /* Stops horizontal scrolling dead in its tracks */
+  margin: 0;
+  padding: 0;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+img, video {
+  max-width: 100%; /* Never allows media to bleed outside screen width */
+  height: auto;
+}
+/* Modal Control Buttons (Mobile Safe) */
+.modal-btn {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  font-size: 1.25rem;
+  cursor: pointer;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1001;
+  user-select: none;
+}
+
+#closeBtn {
+  top: 15px;
+  right: 15px;
+  position: fixed;
+  font-size: 1.75rem;
+}
+
+#prevBtn {
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+#nextBtn {
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+@media (max-width: 600px) {
+  .gallery {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .gallery img, .gallery video {
+    height: 120px;
+  }
+  #modalImg, #modalVideo {
+    max-width: 95vw;
+    max-height: 75vh;
+  }
+}

@@ -1,0 +1,108 @@
+html, body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden; /* Stops horizontal scrolling dead in its tracks */
+  margin: 0;
+  padding: 0;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+img, video {
+  max-width: 100%; /* Never allows media to bleed outside screen width */
+  height: auto;
+}
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: #2b3035;
+  color: #ffffff;
+  padding: 2rem 1rem 4rem;
+}
+
+.title {
+  text-align: center;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  font-weight: 800;
+  margin-bottom: 2.5rem;
+  text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.7);
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.card {
+  position: relative;
+  height: 380px;
+  border-radius: 14px;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1.5rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Dark gradient overlay so text is always readable */
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.65) 0%, rgba(0, 0, 0, 0.1) 50%, rgba(0, 0, 0, 0.75) 100%);
+  z-index: 1;
+}
+
+.card h2,
+.card .btn {
+  position: relative;
+  z-index: 2;
+}
+
+.card h2 {
+  font-size: 1.5rem;
+  text-align: center;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
+}
+
+.card .btn {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  background-color: #f0f8ff;
+  color: #111827;
+  font-weight: 700;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border: 2px solid #000000;
+  font-size: 1rem;
+  transition: transform 0.15s ease, background 0.15s;
+}
+
+.card .btn:hover {
+  background-color: #ffffff;
+  transform: scale(1.02);
+}
+
+/* Background image assignments */
+.card-shirtless { background-image: url(/IMG_5733.JPG.jpeg); }
+.card-happy     { background-image: url(/IMG_6228.PNG); }
+.card-pain      { background-image: url(/IMG_5946.JPG.jpeg); }
+.card-playing   { background-image: url(/IMG_6232.JPG.jpeg); }
+.card-cool      { background-image: url(/IMG_5092.PNG); }
+.card-kid       { background-image: url(/kid1.PNG); }

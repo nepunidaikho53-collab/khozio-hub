@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Khozio Hub — Admin Control</title>
+  
+  <script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #0b0f19;
+      color: #e6edf3;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+    }
+
+    .admin-card {
+      background-color: #161f30;
+      border: 1px solid #283548;
+      border-radius: 20px;
+      padding: 1.75rem 1.25rem;
+      width: 100%;
+      max-width: 480px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    h1 {
+      font-size: 1.45rem;
+      text-align: center;
+      margin-bottom: 0.25rem;
+      color: #ffffff;
+    }
+
+    .subtitle {
+      font-size: 0.85rem;
+      color: #8b949e;
+      text-align: center;
+      margin-bottom: 1.5rem;
+      word-break: break-all;
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #cbd5e1;
+      margin-top: 1rem;
+      margin-bottom: 0.4rem;
+    }
+
+    input[type="email"],
+    input[type="password"],
+    input[type="text"],
+    select {
+      width: 100%;
+      padding: 0.85rem 1rem;
+      border-radius: 10px;
+      border: 1px solid #2b394f;
+      background-color: #0d131f;
+      color: #ffffff;
+      font-size: 1rem;
+      outline: none;
+    }
+
+    input:focus, select:focus {
+      border-color: orangered;
+    }
+
+    .category-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .category-actions button {
+      flex: 1;
+      padding: 0.55rem;
+      background-color: #212c3f;
+      color: #94a3b8;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .category-actions button:hover {
+      color: #fff;
+      border-color: #475569;
+    }
+
+    .category-actions button.del-btn:hover {
+      color: #f87171;
+      border-color: #ef4444;
+    }
+
+    .add-cat-box {
+      display: none;
+      background: #0d131f;
+      border: 1px dashed #334155;
+      padding: 0.75rem;
+      border-radius: 10px;
+      margin-top: 0.5rem;
+      gap: 0.5rem;
+      flex-direction: column;
+    }
+
+    .add-cat-box .row {
+      display: flex;
+      gap: 6px;
+    }
+
+    .add-cat-box button {
+      padding: 0.6rem 1rem;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .mobile-upload-box {
+      border: 2px dashed #ff4500;
+      background-color: rgba(255, 69, 0, 0.05);
+      border-radius: 14px;
+      padding: 1.5rem 1rem;
+      text-align: center;
+      margin-top: 0.5rem;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .mobile-upload-box:active {
+      background-color: rgba(255, 69, 0, 0.15);
+    }
+
+    .upload-icon { font-size: 2.2rem; }
+    .upload-text { font-size: 1rem; font-weight: 600; color: #ff4500; }
+    .upload-hint { font-size: 0.75rem; color: #8b949e; }
+
+    #mediaFileInput { display: none; }
+
+    #previewBox {
+      display: none;
+      margin-top: 1.25rem;
+      text-align: center;
+    }
+
+    #previewBox img, #previewBox video {
+      max-width: 100%;
+      max-height: 220px;
+      border-radius: 10px;
+      border: 1px solid #283548;
+      object-fit: contain;
+      background: #000;
+    }
+
+    button.btn-primary {
+      width: 100%;
+      padding: 1rem;
+      margin-top: 1.25rem;
+      border: none;
+      border-radius: 10px;
+      background-color: orangered;
+      color: #ffffff;
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    button.btn-primary:active { transform: scale(0.98); }
+    button.btn-primary:disabled { background-color: #3b434e; cursor: not-allowed; }
+
+    button.btn-secondary {
+      width: 100%;
+      padding: 0.75rem;
+      margin-top: 0.75rem;
+      background: transparent;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      color: #8b949e;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+
+    #statusMessage {
+      margin-top: 1.25rem;
+      font-size: 0.9rem;
+      text-align: center;
+      padding: 0.75rem;
+      border-radius: 8px;
+      line-height: 1.4;
+      display: none;
+    }
+
+    /* Media Management List */
+    .manage-section {
+      margin-top: 2rem;
+      border-top: 1px solid #283548;
+      padding-top: 1.25rem;
+    }
+
+    .manage-section h2 {
+      font-size: 1.1rem;
+      color: #f1f5f9;
+      margin-bottom: 0.75rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .manage-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      gap: 10px;
+      max-height: 320px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .media-card {
+      position: relative;
+      background: #0d131f;
+      border: 1px solid #283548;
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .media-card img, .media-card video {
+      width: 100%;
+      height: 90px;
+      object-fit: cover;
+    }
+
+    .delete-btn {
+      background: #dc2626;
+      color: #fff;
+      border: none;
+      padding: 5px;
+      font-size: 0.75rem;
+      font-weight: bold;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .delete-btn:active {
+      background: #b91c1c;
+    }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+<div class="admin-card">
+  <!-- 1. LOGIN SCREEN -->
+  <div id="loginView">
+    <h1>Khozio Admin</h1>
+    <p class="subtitle">Sign in to manage Hub media</p>
+
+    <label for="adminEmail">Email Address</label>
+    <input type="email" id="adminEmail" placeholder="admin@example.com" autocomplete="email">
+
+    <label for="adminPassword">Password</label>
+    <input type="password" id="adminPassword" placeholder="••••••••" autocomplete="current-password">
+
+    <button id="loginBtn" class="btn-primary" type="button" onclick="performLogin()">Sign In</button>
+  </div>
+
+  <!-- 2. UPLOAD & MANAGE SCREEN -->
+  <div id="uploadView" class="hidden">
+    <h1>Upload to Khozio</h1>
+    <p class="subtitle" id="userEmailBadge"></p>
+
+    <label for="categorySelect">Select Category</label>
+    <select id="categorySelect" onchange="loadUploadedMedia()"></select>
+
+    <div class="category-actions">
+      <button type="button" onclick="toggleAddCategory()">+ Add Category</button>
+      <button type="button" class="del-btn" onclick="deleteSelectedCategory()">🗑️ Delete Category</button>
+    </div>
+
+    <div id="addCatBox" class="add-cat-box">
+      <input type="text" id="newCatName" placeholder="New Category Name">
+      <div class="row">
+        <button type="button" style="background: orangered; color: #fff; flex: 2;" onclick="saveNewCategory()">Save</button>
+        <button type="button" style="background: #334155; color: #cbd5e1; flex: 1;" onclick="toggleAddCategory()">Cancel</button>
+      </div>
+    </div>
+
+    <label>Choose From Phone</label>
+    <div class="mobile-upload-box" onclick="document.getElementById('mediaFileInput').click()">
+      <div class="upload-icon">📸</div>
+      <div class="upload-text" id="pickerLabel">Open Photo Gallery</div>
+      <div class="upload-hint">Supports iPhone Photos, Videos & HEIC format</div>
+    </div>
+
+    <input 
+      type="file" 
+      id="mediaFileInput" 
+      accept="image/*,video/*,video/mp4,video/quicktime,.heic,.heif,.jpg,.jpeg,.png"
+      onchange="handleSelectedFile(event)"
+    >
+
+    <div id="previewBox">
+      <div id="previewContainer"></div>
+    </div>
+
+    <button id="uploadBtn" class="btn-primary" type="button" onclick="performUpload()">Upload to Website</button>
+
+    <!-- 3. LIVE PHOTO MANAGEMENT (DELETE PHOTOS) -->
+    <div class="manage-section">
+      <h2>
+        <span>Uploaded In Category</span>
+        <button type="button" onclick="loadUploadedMedia()" style="background:none; border:none; color:#38bdf8; font-size:0.8rem; cursor:pointer;">Refresh</button>
+      </h2>
+      <div class="manage-grid" id="manageGrid">
+        <p style="grid-column: 1/-1; font-size:0.85rem; color:#64748b; text-align:center;">No files found</p>
+      </div>
+    </div>
+
+    <button class="btn-secondary" type="button" onclick="performLogout()">Sign Out</button>
+  </div>
+
+  <div id="statusMessage"></div>
+</div>
+
+<script>
+  const SUPABASE_URL = "https://fdufetvyfwtlhbdlbbly.supabase.co";
+  const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZkdWZldHZ5Znd0bGhiZGxiYmx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEwNDAwNzcsImV4cCI6MjEwNjYxNjA3N30.77HH-STdXQi0EuCy84T37kwJD5lEFQscDmhTttllqYo";
+
+  const loginView = document.getElementById("loginView");
+  const uploadView = document.getElementById("uploadView");
+  const userEmailBadge = document.getElementById("userEmailBadge");
+  const statusMessage = document.getElementById("statusMessage");
+  const loginBtn = document.getElementById("loginBtn");
+  const uploadBtn = document.getElementById("uploadBtn");
+  const pickerLabel = document.getElementById("pickerLabel");
+  const previewBox = document.getElementById("previewBox");
+  const previewContainer = document.getElementById("previewContainer");
+  const categorySelect = document.getElementById("categorySelect");
+  const addCatBox = document.getElementById("addCatBox");
+  const manageGrid = document.getElementById("manageGrid");
+
+  let processedFile = null;
+
+  function checkSavedSession() {
+    const token = localStorage.getItem("khozio_admin_token");
+    const email = localStorage.getItem("khozio_admin_email");
+    if (token && email) showUpload(email);
+  }
+  checkSavedSession();
+
+  function showStatus(text, type = "info") {
+    statusMessage.style.display = "block";
+    if (type === "error") {
+      statusMessage.style.background = "#450a0a";
+      statusMessage.style.color = "#f87171";
+      statusMessage.style.border = "1px solid #dc2626";
+    } else if (type === "success") {
+      statusMessage.style.background = "#052e16";
+      statusMessage.style.color = "#4ade80";
+      statusMessage.style.border = "1px solid #16a34a";
+    } else {
+      statusMessage.style.background = "#082f49";
+      statusMessage.style.color = "#38bdf8";
+      statusMessage.style.border = "1px solid #0284c7";
+    }
+    statusMessage.innerText = text;
+  }
+
+  function showUpload(email) {
+    loginView.classList.add("hidden");
+    uploadView.classList.remove("hidden");
+    userEmailBadge.innerText = `Logged in as: ${email}`;
+    statusMessage.style.display = "none";
+    loadCategories();
+  }
+
+  async function loadCategories() {
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/categories?select=*&order=name.asc`, {
+        headers: { "apikey": SUPABASE_KEY }
+      });
+      const data = await res.json();
+      
+      categorySelect.innerHTML = "";
+      if (Array.isArray(data) && data.length > 0) {
+        data.forEach(cat => {
+          const opt = document.createElement("option");
+          opt.value = cat.slug;
+          opt.textContent = cat.name;
+          categorySelect.appendChild(opt);
+        });
+      } else {
+        categorySelect.innerHTML = `<option value="cool">Cool Khozio</option>`;
+      }
+      loadUploadedMedia();
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  // Load photos currently stored for this category
+  async function loadUploadedMedia() {
+    const category = categorySelect.value;
+    manageGrid.innerHTML = `<p style="grid-column: 1/-1; font-size:0.85rem; color:#64748b; text-align:center;">Loading...</p>`;
+
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/uploads?category=eq.${category}&order=created_at.desc`, {
+        headers: { "apikey": SUPABASE_KEY }
+      });
+      const items = await res.json();
+
+      manageGrid.innerHTML = "";
+      if (!Array.isArray(items) || items.length === 0) {
+        manageGrid.innerHTML = `<p style="grid-column: 1/-1; font-size:0.85rem; color:#64748b; text-align:center;">No uploads yet in this category.</p>`;
+        return;
+      }
+
+      items.forEach(item => {
+        const card = document.createElement("div");
+        card.className = "media-card";
+
+        const mediaEl = item.media_type === "video" 
+          ? `<video src="${item.file_url}" muted></video>`
+          : `<img src="${item.file_url}" alt="Upload">`;
+
+        card.innerHTML = `
+          ${mediaEl}
+          <button class="delete-btn" onclick="deleteMedia(${item.id}, '${item.file_url}')">Delete</button>
+        `;
+        manageGrid.appendChild(card);
+      });
+    } catch (err) {
+      manageGrid.innerHTML = `<p style="grid-column: 1/-1; font-size:0.85rem; color:#f87171; text-align:center;">Failed to load media</p>`;
+    }
+  }
+
+  // Delete Media Function (Deletes from both database AND storage bucket)
+  async function deleteMedia(id, fileUrl) {
+    if (!confirm("Are you sure you want to delete this item? It will be removed from the website.")) return;
+
+    const token = localStorage.getItem("khozio_admin_token");
+    if (!token) return performLogout();
+
+    showStatus("Deleting file...", "info");
+
+    try {
+      // 1. Delete row from the database
+      const dbRes = await fetch(`${SUPABASE_URL}/rest/v1/uploads?id=eq.${id}`, {
+        method: "DELETE",
+        headers: {
+          "apikey": SUPABASE_KEY,
+          "Authorization": `Bearer ${token}`
+        }
+      });
+
+      if (!dbRes.ok) throw new Error("Could not remove record from database.");
+
+      // 2. Extract path and delete from storage
+      const bucketUrlPrefix = `${SUPABASE_URL}/storage/v1/object/public/media/`;
+      if (fileUrl.startsWith(bucketUrlPrefix)) {
+        const storagePath = fileUrl.replace(bucketUrlPrefix, "");
+        await fetch(`${SUPABASE_URL}/storage/v1/object/media/${storagePath}`, {
+          method: "DELETE",
+          headers: {
+            "apikey": SUPABASE_KEY,
+            "Authorization": `Bearer ${token}`
+          }
+        });
+      }
+
+      showStatus("File deleted successfully!", "success");
+      loadUploadedMedia();
+    } catch (err) {
+      showStatus("Delete failed: " + err.message, "error");
+    }
+  }
+
+  function toggleAddCategory() {
+    const isVisible = addCatBox.style.display === "flex";
+    addCatBox.style.display = isVisible ? "none" : "flex";
+    document.getElementById("newCatName").value = "";
+  }
+
+  async function saveNewCategory() {
+    const input = document.getElementById("newCatName");
+    const name = input.value.trim();
+    const token = localStorage.getItem("khozio_admin_token");
+
+    if (!name) return showStatus("Enter a category name first.", "error");
+    const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+
+    showStatus("Saving category...", "info");
+
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/categories`, {
+        method: "POST",
+        headers: {
+          "apikey": SUPABASE_KEY,
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ slug, name })
+      });
+
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.message || "Failed to create category");
+      }
+
+      showStatus(`Category "${name}" created!`, "success");
+      toggleAddCategory();
+      await loadCategories();
+      categorySelect.value = slug;
+      loadUploadedMedia();
+    } catch (err) {
+      showStatus(err.message, "error");
+    }
+  }
+
+  async function deleteSelectedCategory() {
+    const selectedSlug = categorySelect.value;
+    const selectedName = categorySelect.options[categorySelect.selectedIndex]?.text;
+    const token = localStorage.getItem("khozio_admin_token");
+
+    if (!selectedSlug) return;
+    if (!confirm(`Are you sure you want to delete the category "${selectedName}"?`)) return;
+
+    showStatus("Deleting category...", "info");
+
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/categories?slug=eq.${selectedSlug}`, {
+        method: "DELETE",
+        headers: {
+          "apikey": SUPABASE_KEY,
+          "Authorization": `Bearer ${token}`
+        }
+      });
+
+      if (!res.ok) throw new Error("Could not delete category.");
+
+      showStatus(`Category "${selectedName}" deleted.`, "success");
+      await loadCategories();
+    } catch (err) {
+      showStatus(err.message, "error");
+    }
+  }
+
+  async function performLogin() {
+    const email = document.getElementById("adminEmail").value.trim();
+    const password = document.getElementById("adminPassword").value;
+
+    if (!email || !password) return showStatus("Enter both email and password.", "error");
+
+    loginBtn.disabled = true;
+    showStatus("Connecting to authentication server...", "info");
+
+    try {
+      const response = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "apikey": SUPABASE_KEY },
+        body: JSON.stringify({ email, password })
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error_description || data.msg || "Login failed");
+
+      localStorage.setItem("khozio_admin_token", data.access_token);
+      localStorage.setItem("khozio_admin_email", data.user.email);
+      showUpload(data.user.email);
+    } catch (err) {
+      showStatus(err.message, "error");
+    } finally {
+      loginBtn.disabled = false;
+    }
+  }
+
+  async function handleSelectedFile(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    previewContainer.innerHTML = "";
+    previewBox.style.display = "none";
+    processedFile = file;
+
+    const fileNameLower = file.name.toLowerCase();
+    pickerLabel.innerText = "Selected: " + file.name;
+
+    if (fileNameLower.endsWith(".heic") || fileNameLower.endsWith(".heif") || file.type === "image/heic") {
+      showStatus("Converting iPhone HEIC photo to JPEG...", "info");
+      try {
+        const convertedBlob = await heic2any({
+          blob: file,
+          toType: "image/jpeg",
+          quality: 0.85
+        });
+        const blobResult = Array.isArray(convertedBlob) ? convertedBlob[0] : convertedBlob;
+        processedFile = new File([blobResult], file.name.replace(/\.[^/.]+$/, ".jpg"), { type: "image/jpeg" });
+        showStatus("Converted successfully!", "success");
+      } catch (err) {
+        showStatus("Could not convert HEIC format. You can still try uploading.", "error");
+      }
+    }
+
+    previewBox.style.display = "block";
+    const objectUrl = URL.createObjectURL(processedFile);
+
+    if (processedFile.type.startsWith("image/")) {
+      const img = document.createElement("img");
+      img.src = objectUrl;
+      previewContainer.appendChild(img);
+    } else if (processedFile.type.startsWith("video/")) {
+      const vid = document.createElement("video");
+      vid.src = objectUrl;
+      vid.controls = true;
+      vid.muted = true;
+      previewContainer.appendChild(vid);
+    }
+  }
+
+  async function performUpload() {
+    const category = categorySelect.value;
+    const token = localStorage.getItem("khozio_admin_token");
+
+    if (!processedFile) return showStatus("Please choose a photo from your gallery first.", "error");
+    if (!token) return performLogout();
+
+    uploadBtn.disabled = true;
+    showStatus("Uploading directly to cloud storage...", "info");
+
+    try {
+      const safeName = processedFile.name.replace(/[^a-zA-Z0-9.-]/g, "_");
+      const storagePath = `${category}/${Date.now()}_${safeName}`;
+
+      const uploadRes = await fetch(`${SUPABASE_URL}/storage/v1/object/media/${storagePath}`, {
+        method: "POST",
+        headers: {
+          "apikey": SUPABASE_KEY,
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": processedFile.type || "application/octet-stream"
+        },
+        body: processedFile
+      });
+
+      if (!uploadRes.ok) {
+        const uploadErr = await uploadRes.json();
+        throw new Error(uploadErr.message || "Storage upload failed");
+      }
+
+      const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/media/${storagePath}`;
+      const mediaType = processedFile.type.startsWith("video/") ? "video" : "image";
+
+      const dbRes = await fetch(`${SUPABASE_URL}/rest/v1/uploads`, {
+        method: "POST",
+        headers: {
+          "apikey": SUPABASE_KEY,
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+          "Prefer": "return=representation"
+        },
+        body: JSON.stringify({ file_url: publicUrl, category, media_type: mediaType })
+      });
+
+      if (!dbRes.ok) {
+        const dbErr = await dbRes.json();
+        throw new Error(dbErr.message || "Database insert failed");
+      }
+
+      showStatus("Photo uploaded! Your friends can see it right now.", "success");
+      
+      processedFile = null;
+      document.getElementById("mediaFileInput").value = "";
+      previewBox.style.display = "none";
+      pickerLabel.innerText = "Open Photo Gallery";
+      loadUploadedMedia(); // Refresh thumbnail grid automatically
+    } catch (err) {
+      showStatus("Upload failed: " + err.message, "error");
+    } finally {
+      uploadBtn.disabled = false;
+    }
+  }
+
+  function performLogout() {
+    localStorage.removeItem("khozio_admin_token");
+    localStorage.removeItem("khozio_admin_email");
+    uploadView.classList.add("hidden");
+    loginView.classList.remove("hidden");
+    statusMessage.style.display = "none";
+  }
+</script>
+</body>
+</html>
