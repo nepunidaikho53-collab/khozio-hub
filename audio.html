@@ -2,33 +2,180 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Khozio Singing</title>
-  <link rel="stylesheet" href="/audio.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Khozio Singing — Audio Tracks</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #0b0f19;
+      color: #e6edf3;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1.25rem 4rem;
+    }
+
+    .nav-back {
+      display: inline-block;
+      color: orangered;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.95rem;
+      margin-bottom: 1.5rem;
+      align-self: flex-start;
+      max-width: 600px;
+      width: 100%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .audio-card {
+      background-color: #161f30;
+      border: 1px solid #283548;
+      border-radius: 20px;
+      padding: 2rem 1.5rem;
+      width: 100%;
+      max-width: 600px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      color: #ffffff;
+      margin-bottom: 0.35rem;
+    }
+
+    .subtitle {
+      font-size: 0.95rem;
+      color: #8b949e;
+      margin-bottom: 2rem;
+    }
+
+    .track-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      text-align: left;
+    }
+
+    .track-item {
+      background: #0d131f;
+      border: 1px solid #283548;
+      border-radius: 12px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .track-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #cbd5e1;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      word-break: break-word;
+    }
+
+    audio {
+      width: 100%;
+      height: 44px;
+      outline: none;
+      border-radius: 8px;
+    }
+
+    #statusMessage {
+      color: #8b949e;
+      font-size: 0.95rem;
+      margin-top: 1.5rem;
+    }
+  </style>
 </head>
 <body>
-  <div class="audio-container">
-    <h1 class="page-title">KHOZIO SINGING</h1>
 
-    <div class="audio-card">
-      <div class="audio-info">
-        <h3>PHOTOGRAPH</h3>
-        <p>A beautiful song sung by Khozio</p>
+  <a href="index.html" class="nav-back">← Back to Hub</a>
+
+  <div class="audio-card">
+    <h1>KHOZIO SINGING</h1>
+    <p class="subtitle">Listen to vocal tracks & voice clips</p>
+
+    <div class="track-list" id="trackList">
+      <!-- 
+        If you have a local audio file stored right in your GitHub repository, 
+        uncomment the block below and replace 'your-audio-file.mp3' with its exact name:
+      -->
+      <!--
+      <div class="track-item">
+        <div class="track-title">🎤 Local Audio Track</div>
+        <audio controls preload="metadata" src="your-audio-file.mp3"></audio>
       </div>
-      <audio controls>
-        <source src="/Recording (16) (1).mp3" type="audio/mp3">
-      </audio>
+      -->
     </div>
 
-    <div class="audio-card">
-      <div class="audio-info">
-        <h3>CHATTAN</h3>
-        <p>Another beautiful song sung by Khozio</p>
-      </div>
-      <audio controls>
-        <source src="/Recording (23).mp3" type="audio/mp3">
-      </audio>
-    </div>
+    <p id="statusMessage">Checking cloud recordings...</p>
   </div>
+
+  <script>
+    const SUPABASE_URL = "https://fdufetvyfwtlhbdlbbly.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZkdWZldHZ5Znd0bGhiZGxiYmx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEwNDAwNzcsImV4cCI6MjEwNjYxNjA3N30.77HH-STdXQi0EuCy84T37kwJD5lEFQscDmhTttllqYo";
+
+    const trackList = document.getElementById("trackList");
+    const statusMessage = document.getElementById("statusMessage");
+
+    async function fetchAudioTracks() {
+      try {
+        // Query any upload tagged as audio or in a singing/audio category
+        const res = await fetch(
+          `${SUPABASE_URL}/rest/v1/uploads?or=(media_type.eq.audio,category.eq.singing,category.eq.audio)&order=created_at.desc`, 
+          {
+            headers: { "apikey": SUPABASE_KEY }
+          }
+        );
+
+        const data = await res.json();
+
+        if (!Array.isArray(data) || data.length === 0) {
+          // If no cloud uploads found and no local items were rendered
+          if (trackList.children.length === 0) {
+            statusMessage.innerText = "No audio tracks found yet.";
+          } else {
+            statusMessage.style.display = "none";
+          }
+          return;
+        }
+
+        statusMessage.style.display = "none";
+
+        data.forEach((track, idx) => {
+          const rawName = decodeURIComponent(track.file_url.split('/').pop().replace(/^\d+_/, ''));
+          const trackEl = document.createElement("div");
+          trackEl.className = "track-item";
+          trackEl.innerHTML = `
+            <div class="track-title">🎵 Track ${data.length - idx}: ${rawName}</div>
+            <audio controls preload="metadata">
+              <source src="${track.file_url}">
+              Your browser does not support audio playback.
+            </audio>
+          `;
+          trackList.appendChild(trackEl);
+        });
+      } catch (err) {
+        statusMessage.innerText = "Error loading tracks: " + err.message;
+        statusMessage.style.color = "#f87171";
+      }
+    }
+
+    fetchAudioTracks();
+  </script>
 </body>
 </html>
