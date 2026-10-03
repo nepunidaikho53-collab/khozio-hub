@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Khozio Hub</title>
-  <!-- NOTE: No leading slash '/' here -->
+  <!-- Relative path to style.css (no leading slash) -->
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -14,21 +14,14 @@
 
   <div class="container">
     <div class="logo">
-      <!-- NOTE: No leading slash here. Verify the exact file extension in your repo! -->
       <img src="IMG_6226.JPG.jpeg" alt="Khozio Logo" onerror="this.style.display='none'">
     </div> 
 
-    <a href="gallery.html">
-      <button class="gallery">KHOZIO GALLERY</button>
-    </a> 
-
-    <a href="about.html">
-      <button class="about">ABOUT KHOZIO</button>
-    </a> 
-
-    <a href="audio.html">
-      <button class="audio">KHOZIO SINGING</button>
-    </a>
+    <!-- Direct relative links without nested <button> elements -->
+    <a href="gallery.html" class="nav-button">KHOZIO GALLERY</a>
+    <a href="about.html" class="nav-button">ABOUT KHOZIO</a>
+    <a href="audio.html" class="nav-button">KHOZIO SINGING</a>
+    <a href="admin.html" class="nav-button admin-btn">ADMIN UPLOAD</a>
   </div>
 </body>
 </html>
