@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Khozio Gallery</title>
+  <title>Khozio Gallery — Live Photos</title>
   <style>
     * {
       box-sizing: border-box;
@@ -23,13 +23,6 @@
       padding: 1.5rem 1rem 3rem;
     }
 
-    .header {
-      text-align: center;
-      max-width: 600px;
-      margin-bottom: 2rem;
-      width: 100%;
-    }
-
     .nav-back {
       display: inline-block;
       color: orangered;
@@ -39,109 +32,242 @@
       margin-bottom: 1rem;
     }
 
-    .header h1 {
+    h1 {
       font-size: clamp(1.8rem, 6vw, 2.5rem);
       letter-spacing: 1px;
       color: #ffffff;
       margin-bottom: 0.35rem;
+      text-align: center;
     }
 
     .subtitle {
       color: #8b949e;
       font-size: 0.95rem;
-    }
-
-    .categories-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 16px;
-      width: 100%;
-      max-width: 850px;
-    }
-
-    .category-card {
-      background-color: #161f30;
-      border: 1px solid #283548;
-      border-radius: 14px;
-      padding: 1.5rem 1rem;
-      text-decoration: none;
-      color: #ffffff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      margin-bottom: 1.5rem;
       text-align: center;
-      transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
     }
 
-    .category-card:hover,
-    .category-card:active {
-      transform: translateY(-3px);
-      border-color: orangered;
-      background-color: #1c273c;
+    /* Category Filter Tabs */
+    .filter-bar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 800px;
+      margin-bottom: 2rem;
     }
 
-    .card-icon {
-      font-size: 2.2rem;
-      margin-bottom: 0.75rem;
-    }
-
-    .category-card h2 {
-      font-size: 1.15rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .category-card span {
+    .filter-btn {
+      background: #161f30;
+      border: 1px solid #283548;
+      color: #94a3b8;
+      padding: 0.55rem 1rem;
+      border-radius: 20px;
       font-size: 0.85rem;
-      color: orangered;
       font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .filter-btn.active, .filter-btn:hover {
+      background: orangered;
+      color: #fff;
+      border-color: orangered;
+    }
+
+    /* Photo/Video Gallery Grid */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 12px;
+      width: 100%;
+      max-width: 900px;
+    }
+
+    @media (min-width: 600px) {
+      .gallery-grid {
+        grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+        gap: 16px;
+      }
+    }
+
+    .media-card {
+      background: #161f30;
+      border: 1px solid #283548;
+      border-radius: 12px;
+      overflow: hidden;
+      aspect-ratio: 1 / 1;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      position: relative;
+    }
+
+    .media-card img, .media-card video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.2s;
+    }
+
+    .media-card:hover img, .media-card:hover video {
+      transform: scale(1.04);
+    }
+
+    #statusMessage {
+      color: #94a3b8;
+      font-size: 1rem;
+      margin-top: 2rem;
+      text-align: center;
+    }
+
+    /* Fullscreen Modal */
+    #modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.95);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+    }
+
+    #modalContent {
+      max-width: 95vw;
+      max-height: 85vh;
+      border-radius: 10px;
+      object-fit: contain;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: none;
+      font-size: 2rem;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
 
-  <header class="header">
-    <a href="index.html" class="nav-back">← Home</a>
-    <h1>KHOZIO GALLERY</h1>
-    <p class="subtitle">Select a category to view photos and videos</p>
-  </header>
+  <a href="index.html" class="nav-back">← Back to Hub</a>
+  <h1>KHOZIO GALLERY</h1>
+  <p class="subtitle">All photos & videos uploaded directly to the cloud</p>
 
-  <main class="categories-grid">
-    <a href="cool.html" class="category-card">
-      <div class="card-icon">😎</div>
-      <h2>Cool Khozio</h2>
-      <span>View Collection →</span>
-    </a>
+  <!-- Filter tabs -->
+  <div class="filter-bar" id="filterBar">
+    <button class="filter-btn active" onclick="filterCategory('all', this)">All</button>
+    <button class="filter-btn" onclick="filterCategory('cool', this)">Cool</button>
+    <button class="filter-btn" onclick="filterCategory('kid', this)">Kid</button>
+    <button class="filter-btn" onclick="filterCategory('happy', this)">Happy</button>
+    <button class="filter-btn" onclick="filterCategory('pain', this)">In Pain</button>
+    <button class="filter-btn" onclick="filterCategory('shirtless', this)">Shirtless</button>
+    <button class="filter-btn" onclick="filterCategory('playing', this)">Playing</button>
+  </div>
 
-    <a href="kid.html" class="category-card">
-      <div class="card-icon">👶</div>
-      <h2>Kid Khozio</h2>
-      <span>View Collection →</span>
-    </a>
+  <!-- Media Grid -->
+  <div class="gallery-grid" id="galleryGrid"></div>
+  <p id="statusMessage">Connecting to cloud library...</p>
 
-    <a href="happy.html" class="category-card">
-      <div class="card-icon">😄</div>
-      <h2>Happy Khozio</h2>
-      <span>View Collection →</span>
-    </a>
+  <!-- Fullscreen Modal -->
+  <div id="modal" onclick="closeModal()">
+    <button class="close-btn" onclick="closeModal()">×</button>
+    <img id="modalContent" src="" alt="Fullscreen Media">
+  </div>
 
-    <a href="pain.html" class="category-card">
-      <div class="card-icon">🤕</div>
-      <h2>Khozio In Pain</h2>
-      <span>View Collection →</span>
-    </a>
+  <script>
+    const SUPABASE_URL = "https://fdufetvyfwtlhbdlbbly.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZkdWZldHZ5Znd0bGhiZGxiYmx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEwNDAwNzcsImV4cCI6MjEwNjYxNjA3N30.77HH-STdXQi0EuCy84T37kwJD5lEFQscDmhTttllqYo";
 
-    <a href="shirtless.html" class="category-card">
-      <div class="card-icon">💪</div>
-      <h2>Khozio Shirtless</h2>
-      <span>View Collection →</span>
-    </a>
+    const galleryGrid = document.getElementById("galleryGrid");
+    const statusMessage = document.getElementById("statusMessage");
+    const modal = document.getElementById("modal");
+    const modalContent = document.getElementById("modalContent");
 
-    <a href="playing.html" class="category-card">
-      <div class="card-icon">🎮</div>
-      <h2>Khozio Playing</h2>
-      <span>View Collection →</span>
-    </a>
-  </main>
+    let allMediaItems = [];
 
+    async function loadAllMedia() {
+      try {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/uploads?select=*&order=created_at.desc`, {
+          headers: {
+            "apikey": SUPABASE_KEY
+          }
+        });
+        
+        const data = await res.json();
+
+        if (!Array.isArray(data) || data.length === 0) {
+          statusMessage.innerText = "No photos found in the cloud library. Upload some in admin.html!";
+          return;
+        }
+
+        allMediaItems = data;
+        statusMessage.style.display = "none";
+        renderGallery(allMediaItems);
+      } catch (err) {
+        statusMessage.innerText = "Error loading media: " + err.message;
+        statusMessage.style.color = "#f87171";
+      }
+    }
+
+    function renderGallery(items) {
+      galleryGrid.innerHTML = "";
+
+      if (items.length === 0) {
+        galleryGrid.innerHTML = '<p style="grid-column: 1/-1; text-align:center; color:#64748b;">No items in this category.</p>';
+        return;
+      }
+
+      items.forEach(item => {
+        const card = document.createElement("div");
+        card.className = "media-card";
+
+        if (item.media_type === "video") {
+          card.innerHTML = `<video src="${item.file_url}" muted loop></video>`;
+          card.onclick = () => openModal(item.file_url, true);
+        } else {
+          card.innerHTML = `<img src="${item.file_url}" loading="lazy" alt="Khozio photo">`;
+          card.onclick = () => openModal(item.file_url, false);
+        }
+
+        galleryGrid.appendChild(card);
+      });
+    }
+
+    function filterCategory(category, buttonEl) {
+      document.querySelectorAll(".filter-btn").forEach(btn => btn.classList.remove("active"));
+      buttonEl.classList.add("active");
+
+      if (category === "all") {
+        renderGallery(allMediaItems);
+      } else {
+        const filtered = allMediaItems.filter(item => item.category === category);
+        renderGallery(filtered);
+      }
+    }
+
+    function openModal(url, isVideo) {
+      modal.style.display = "flex";
+      if (isVideo) {
+        modal.innerHTML = `<button class="close-btn" onclick="closeModal()">×</button><video id="modalContent" src="${url}" controls autoplay></video>`;
+      } else {
+        modal.innerHTML = `<button class="close-btn" onclick="closeModal()">×</button><img id="modalContent" src="${url}" alt="Fullscreen">`;
+      }
+    }
+
+    function closeModal() {
+      modal.style.display = "none";
+      modal.innerHTML = "";
+    }
+
+    loadAllMedia();
+  </script>
 </body>
 </html>
