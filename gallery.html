@@ -3,42 +3,55 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Khozio Gallery Categories</title>
-  <link rel="stylesheet" href="/gallery.css">
+  <title>Khozio Gallery</title>
+  <!-- Relative path without leading slash -->
+  <link rel="stylesheet" href="gallery.css">
 </head>
 <body>
-  <h1 class="title">KHOZIO PHOTOS CATEGORY</h1>
 
-  <div class="cards-grid">
-    <div class="card card-shirtless">
-      <h2>KHOZIO SHIRTLESS</h2>
-      <a href="/shirtless.html" class="btn">Click for more</a>
-    </div>
+  <header class="header">
+    <a href="index.html" class="nav-back">← Home</a>
+    <h1>KHOZIO GALLERY</h1>
+    <p class="subtitle">Select a category to view photos and videos</p>
+  </header>
 
-    <div class="card card-happy">
-      <h2>KHOZIO HAPPY</h2>
-      <a href="/happy.html" class="btn">Click for more</a>
-    </div>
+  <main class="categories-grid">
+    <a href="cool.html" class="category-card">
+      <div class="card-icon">😎</div>
+      <h2>Cool Khozio</h2>
+      <span>View Collection →</span>
+    </a>
 
-    <div class="card card-pain">
-      <h2>KHOZIO IN PAIN</h2>
-      <a href="/pain.html" class="btn">Click for more</a>
-    </div>
+    <a href="kid.html" class="category-card">
+      <div class="card-icon">👶</div>
+      <h2>Kid Khozio</h2>
+      <span>View Collection →</span>
+    </a>
 
-    <div class="card card-playing">
-      <h2>KHOZIO PLAYING</h2>
-      <a href="/playing.html" class="btn">Click for more</a>
-    </div>
+    <a href="happy.html" class="category-card">
+      <div class="card-icon">😄</div>
+      <h2>Happy Khozio</h2>
+      <span>View Collection →</span>
+    </a>
 
-    <div class="card card-cool">
-      <h2>COOL KHOZIO</h2>
-      <a href="/cool.html" class="btn">Click for more</a>
-    </div>
+    <a href="pain.html" class="category-card">
+      <div class="card-icon">🤕</div>
+      <h2>Khozio In Pain</h2>
+      <span>View Collection →</span>
+    </a>
 
-    <div class="card card-kid">
-      <h2>KID KHOZIO</h2>
-      <a href="/kid.html" class="btn">Click for more</a>
-    </div>
-  </div>
+    <a href="shirtless.html" class="category-card">
+      <div class="card-icon">💪</div>
+      <h2>Khozio Shirtless</h2>
+      <span>View Collection →</span>
+    </a>
+
+    <a href="playing.html" class="category-card">
+      <div class="card-icon">🎮</div>
+      <h2>Khozio Playing</h2>
+      <span>View Collection →</span>
+    </a>
+  </main>
+
 </body>
 </html>
