@@ -47,13 +47,13 @@
       text-align: center;
     }
 
-    /* Category Filter Tabs */
+    /* Dynamic Filter Bar */
     .filter-bar {
       display: flex;
       gap: 8px;
       flex-wrap: wrap;
       justify-content: center;
-      max-width: 800px;
+      max-width: 850px;
       margin-bottom: 2rem;
     }
 
@@ -61,7 +61,7 @@
       background: #161f30;
       border: 1px solid #283548;
       color: #94a3b8;
-      padding: 0.55rem 1rem;
+      padding: 0.55rem 1.1rem;
       border-radius: 20px;
       font-size: 0.85rem;
       font-weight: 600;
@@ -75,7 +75,7 @@
       border-color: orangered;
     }
 
-    /* Photo/Video Gallery Grid */
+    /* Media Gallery Grid */
     .gallery-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
@@ -115,7 +115,7 @@
     }
 
     #statusMessage {
-      color: #94a3b8;
+      color: #8b949e;
       font-size: 1rem;
       margin-top: 2rem;
       text-align: center;
@@ -159,22 +159,16 @@
 
   <a href="index.html" class="nav-back">← Back to Hub</a>
   <h1>KHOZIO GALLERY</h1>
-  <p class="subtitle">All photos & videos uploaded directly to the cloud</p>
+  <p class="subtitle">All photos & videos live from the cloud</p>
 
-  <!-- Filter tabs -->
+  <!-- Dynamic Filter Bar Populated from Database -->
   <div class="filter-bar" id="filterBar">
     <button class="filter-btn active" onclick="filterCategory('all', this)">All</button>
-    <button class="filter-btn" onclick="filterCategory('cool', this)">Cool</button>
-    <button class="filter-btn" onclick="filterCategory('kid', this)">Kid</button>
-    <button class="filter-btn" onclick="filterCategory('happy', this)">Happy</button>
-    <button class="filter-btn" onclick="filterCategory('pain', this)">In Pain</button>
-    <button class="filter-btn" onclick="filterCategory('shirtless', this)">Shirtless</button>
-    <button class="filter-btn" onclick="filterCategory('playing', this)">Playing</button>
   </div>
 
   <!-- Media Grid -->
   <div class="gallery-grid" id="galleryGrid"></div>
-  <p id="statusMessage">Connecting to cloud library...</p>
+  <p id="statusMessage">Connecting to cloud gallery...</p>
 
   <!-- Fullscreen Modal -->
   <div id="modal" onclick="closeModal()">
@@ -186,25 +180,53 @@
     const SUPABASE_URL = "https://fdufetvyfwtlhbdlbbly.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZkdWZldHZ5Znd0bGhiZGxiYmx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEwNDAwNzcsImV4cCI6MjEwNjYxNjA3N30.77HH-STdXQi0EuCy84T37kwJD5lEFQscDmhTttllqYo";
 
+    const filterBar = document.getElementById("filterBar");
     const galleryGrid = document.getElementById("galleryGrid");
     const statusMessage = document.getElementById("statusMessage");
     const modal = document.getElementById("modal");
-    const modalContent = document.getElementById("modalContent");
 
     let allMediaItems = [];
 
+    // 1. Fetch Dynamic Categories from Database
+    async function loadDynamicCategories() {
+      try {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/categories?select=*&order=name.asc`, {
+          headers: { "apikey": SUPABASE_KEY }
+        });
+        const categories = await res.json();
+
+        // Keep the 'All' button, append dynamic buttons
+        filterBar.innerHTML = `<button class="filter-btn active" onclick="filterCategory('all', this)">All</button>`;
+
+        if (Array.isArray(categories)) {
+          categories.forEach(cat => {
+            // Skip 'singing' category if you prefer audio to stay on audio.html
+            if (cat.slug === "singing") return;
+
+            const btn = document.createElement("button");
+            btn.className = "filter-btn";
+            btn.textContent = cat.name;
+            btn.onclick = () => filterCategory(cat.slug, btn);
+            filterBar.appendChild(btn);
+          });
+        }
+      } catch (err) {
+        console.error("Could not fetch categories:", err);
+      }
+    }
+
+    // 2. Fetch Media Uploads
     async function loadAllMedia() {
       try {
-        const res = await fetch(`${SUPABASE_URL}/rest/v1/uploads?select=*&order=created_at.desc`, {
-          headers: {
-            "apikey": SUPABASE_KEY
-          }
+        // Exclude audio files so gallery only displays visual photos/videos
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/uploads?media_type=neq.audio&order=created_at.desc`, {
+          headers: { "apikey": SUPABASE_KEY }
         });
         
         const data = await res.json();
 
         if (!Array.isArray(data) || data.length === 0) {
-          statusMessage.innerText = "No photos found in the cloud library. Upload some in admin.html!";
+          statusMessage.innerText = "No photos found yet. Upload some in admin.html!";
           return;
         }
 
@@ -221,7 +243,7 @@
       galleryGrid.innerHTML = "";
 
       if (items.length === 0) {
-        galleryGrid.innerHTML = '<p style="grid-column: 1/-1; text-align:center; color:#64748b;">No items in this category.</p>';
+        galleryGrid.innerHTML = '<p style="grid-column: 1/-1; text-align:center; color:#64748b;">No items found in this category.</p>';
         return;
       }
 
@@ -241,14 +263,14 @@
       });
     }
 
-    function filterCategory(category, buttonEl) {
+    function filterCategory(categorySlug, buttonEl) {
       document.querySelectorAll(".filter-btn").forEach(btn => btn.classList.remove("active"));
       buttonEl.classList.add("active");
 
-      if (category === "all") {
+      if (categorySlug === "all") {
         renderGallery(allMediaItems);
       } else {
-        const filtered = allMediaItems.filter(item => item.category === category);
+        const filtered = allMediaItems.filter(item => item.category === categorySlug);
         renderGallery(filtered);
       }
     }
@@ -267,6 +289,8 @@
       modal.innerHTML = "";
     }
 
+    // Initialize both categories and media simultaneously
+    loadDynamicCategories();
     loadAllMedia();
   </script>
 </body>
